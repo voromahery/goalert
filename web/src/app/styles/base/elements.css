@@ -22,3 +22,7 @@ a:hover {
 .rbc-time-content .rbc-current-time-indicator {
   background-color: #8f1022;
 }
+
+.create-alert-dialog {
+  height: 65vh;
+}

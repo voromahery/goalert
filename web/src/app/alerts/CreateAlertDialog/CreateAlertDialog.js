@@ -21,16 +21,11 @@ import AppLink from '../../util/AppLink'
 
 const pluralize = (num) => (num !== 1 ? 's' : '')
 
-const useStyles = makeStyles((theme) => ({
-  dialog: {
-    [theme.breakpoints.up('md')]: {
-      height: '65vh',
-    },
-  },
+const useStyles = makeStyles({
   flexGrow: {
     flexGrow: 1,
   },
-}))
+})
 
 export default function CreateAlertDialog(props) {
   const classes = useStyles()
@@ -150,7 +145,7 @@ export default function CreateAlertDialog(props) {
           />
         )
       }
-      PaperProps={{ className: classes.dialog }}
+      PaperProps={{ className: 'create-alert-dialog' }}
       onSubmit={() => (hasCompleted ? props.onClose() : mutate())}
       onNext={currentStep < 2 ? onNext : null}
       onBack={currentStep > 0 ? () => setStep(currentStep - 1) : null}
