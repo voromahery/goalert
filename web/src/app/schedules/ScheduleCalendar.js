@@ -165,6 +165,71 @@ export default class ScheduleCalendar extends React.PureComponent {
     }
   }
 
+  getEventWrapperActions = (event) => {
+    let result
+    // TODO cache DateTime.utc()
+    if (DateTime.fromJSDate(event.end) <= DateTime.utc()) {
+      return []
+    }
+    if (event.tempSched) {
+      result = [
+        {
+          'data-cy': 'edit-temp-sched',
+          onClick: () => this.props.onEditTempSched(event.tempSched),
+          title: 'Edit this temporary schedule',
+          children: 'Edit',
+        },
+      ]
+      if (!event.isTempSchedShift) {
+        result.push({
+          'data-cy': 'delete-temp-sched',
+          onClick: () => this.props.onDeleteTempSched(event.tempSched),
+          title: 'Delete this temporary schedule',
+          children: 'Delete',
+        })
+      }
+    } else if (event.fixes) {
+      result = []
+    } else {
+      result = [
+        {
+          'data-cy': 'replace-override',
+          onClick: () =>
+            this.setState({
+              overrideDialog: {
+                variant: 'replace',
+                defaultValue: {
+                  start: event.start.toISOString(),
+                  end: event.end.toISOString(),
+                  removeUserID: event.userID,
+                },
+              },
+            }),
+          title: `Temporarily replace ${event.title} from this schedule`,
+          children: 'Replace',
+        },
+        {
+          'data-cy': 'remove-override',
+          onClick: () =>
+            this.setState({
+              overrideDialog: {
+                variant: 'remove',
+                defaultValue: {
+                  start: event.start.toISOString(),
+                  end: event.end.toISOString(),
+                  removeUserID: event.userID,
+                },
+              },
+            }),
+          title: `Temporarily remove ${event.title} from this schedule`,
+          children: 'Remove',
+        },
+      ]
+    }
+
+    return result
+  }
+
   render() {
     const {
       classes,
@@ -174,8 +239,6 @@ export default class ScheduleCalendar extends React.PureComponent {
       weekly,
       CardProps,
       onNewTempSched,
-      onEditTempSched,
-      onDeleteTempSched,
     } = this.props
 
     return (
@@ -205,16 +268,14 @@ export default class ScheduleCalendar extends React.PureComponent {
               onNavigate={this.handleCalNavigate}
               onView={this.handleViewChange}
               components={{
-                eventWrapper: (props) => (
-                  <CalendarEventWrapper
-                    onOverrideClick={(overrideDialog) =>
-                      this.setState({ overrideDialog })
-                    }
-                    onEditTempSched={onEditTempSched}
-                    onDeleteTempSched={onDeleteTempSched}
-                    {...props}
-                  />
-                ),
+                eventWrapper: (props) => {
+                  const actions = this.getEventWrapperActions(props.event)
+                  return (
+                    <CalendarEventWrapper event={props.event} actions={actions}>
+                      {props.children}
+                    </CalendarEventWrapper>
+                  )
+                },
                 toolbar: (props) => (
                   <CalendarToolbar
                     date={props.date}
