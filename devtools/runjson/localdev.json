@@ -26,7 +26,8 @@
       "bin/tools/prometheus",
       "--config.file=devtools/prometheus/prometheus.yml",
       "--storage.tsdb.path=bin/prom-data/",
-      "--web.listen-address=localhost:9090"
+      "--web.listen-address=localhost:9090",
+      "--log.level=warn"
     ]
   },
   {
